@@ -100,4 +100,9 @@ int main()
     Point* x = new Point3D();
     static_cast <Point3D*> (x)->printPoint();
     delete x;
+
+    Point m(1, 1);
+    Point n(2, 2);
+
+    Vector_v2 k(m, n);
 }

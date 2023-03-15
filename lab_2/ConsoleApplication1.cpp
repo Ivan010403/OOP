@@ -21,6 +21,7 @@ public:
     }
 };
 
+
 class Vector {
 private:
     Point* _first;
@@ -48,6 +49,23 @@ double Vector::length() {
     return (double)sqrt(pow(double(abs(_second->get_x() - _first->get_x())), double(2)) + pow((double)(abs(_second->get_y() - _first->get_y())), (double)2));
 }
 
+
+class Point3D : public Point {
+private:
+    int _z;
+
+public:
+    void printPoint() {
+        Point::printPoint();
+        cout << " " << _z;
+    }
+    Point3D() : Point(), _z(0) { cout << "Point3D()\n"; }
+    Point3D(int x, int y, int z) : Point(x, y), _z(z) { cout << "Point3D(int x, int y, int z)\n"; }
+    Point3D(Point3D& pnt) : Point(pnt), _z(pnt._z) { cout << "Point3D(Point3D& pnt)\n"; }
+    ~Point3D() override { cout << "~Point3D()\n"; }
+};
+
+
 int main()
 {
     Point first(20, 15);
@@ -61,6 +79,13 @@ int main()
     Vector vect(first, third);
 
     vect.print_vector();
-
     cout << vect.length() << "\n";
+
+    Point3D x1(1, 2, 3);
+    Point3D x2 = x1;
+
+
+    Point* x = new Point3D();
+    static_cast <Point3D*> (x)->printPoint();
+    delete x;
 }

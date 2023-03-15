@@ -16,8 +16,8 @@ public:
     Point(Point& pnt) : _x(pnt._x), _y(pnt._y) { cout << "Point(Point& pnt)\n"; }
     virtual ~Point() { cout << "~Point()\n"; }
 
-    void printPoint() {
-        cout << _x << " " << _y <<"\n";
+    virtual void printPoint() {
+        cout << _x << " " << _y;
     }
 };
 
@@ -55,7 +55,7 @@ private:
     int _z;
 
 public:
-    void printPoint() {
+    void printPoint() override {
         Point::printPoint();
         cout << " " << _z;
     }
@@ -105,4 +105,17 @@ int main()
     Point n(2, 2);
 
     Vector_v2 k(m, n);
+
+    cout << "\n";
+
+    Point* set[5];
+
+    for (int i = 0; i < 5; i++)
+    {
+        if (rand() % 2) set[i] = new Point();
+        else set[i] = new Point3D();
+
+        set[i]->printPoint();
+    }
+    cout << "\n\n";
 }

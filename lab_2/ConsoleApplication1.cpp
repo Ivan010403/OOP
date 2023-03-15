@@ -18,6 +18,27 @@ public:
     }
 };
 
+class Vector {
+private:
+    Point* _first;
+    Point* _second;
+public:
+    Vector() : _first(new Point), _second(new Point) { cout << "Vector()\n"; }
+    Vector(Point& first, Point& second) : _first(new Point(first)), _second(new Point(second)) { cout << "Vector(Point first, Point second)\n"; }
+    Vector(Vector& vct) : _first(new Point(*vct._first)), _second(new Point(*vct._second)) { cout << "Vector(Vector& vct)\n"; }
+
+    ~Vector() {
+        delete _first;
+        delete _second;
+        cout << "~Vector()\n";
+    }
+
+    void print_vector() {
+        _first->printPoint();
+        _second->printPoint();
+    }
+};
+
 int main()
 {
     Point first(20, 25);
@@ -26,4 +47,11 @@ int main()
     Point* second = new Point(first);
     second->printPoint();
     delete second;
+
+    Point third(15, 10);
+    Vector vect(first, third);
+
+    vect.print_vector();
+
+
 }

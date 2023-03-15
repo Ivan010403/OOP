@@ -66,6 +66,18 @@ public:
 };
 
 
+class Vector_v2 {
+private:
+    Point _first;
+    Point _second;
+public:
+    Vector_v2() { cout << "Vector_v2()\n"; }
+    Vector_v2(Point& first, Point& second) : _first(first), _second(second) { cout << "Vector_v2(Point first, Point second)\n"; }
+    Vector_v2(Vector_v2& vct) : _first(vct._first), _second(vct._second) { cout << "Vector_v2(Vector_v2& vct)\n"; }
+    ~Vector_v2() { cout << "~Vector_v2()\n"; }
+};
+
+
 int main()
 {
     Point first(20, 15);

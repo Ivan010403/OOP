@@ -54,27 +54,29 @@ public:
     }
 
     _Array(_Array& arr){
-        array = arr.array;
+        array = arr.array; //reference semantics, если вызовется деструктор arr, то array не будет иметь доступ к памяти по этому адресу. Надо сделать глубокое копирование
         cout << "_Array(_Array& arr)\n"; 
     } // должны скопировать всё содержимое arr;
 
     ~_Array() { cout << "~_Array()\n"; }
 
-    void SetObject(int pozition, Base& base) {
-        array[pozition] = &base;
+    void SetObject(int pozition, Base* base) {
+        array[pozition] = base; //работаем с указателями, ведь 
     }
 
     void ObjectInfo(int pozition) {
         cout << array[pozition]->getInfo();
     }
+
+    void RemoveObj(int pozition) {
+        delete array[pozition]; 
+    }
 };
 
 int main()
 {
-    _Array arr(2);
+    _Array arr(100);
 
-    Desc1_1 p;
-
-    arr.SetObject(0, p);
-    arr.ObjectInfo(0);
+    arr.SetObject(0, new Desc1_1);
+    arr.RemoveObj(0);
 }

@@ -37,6 +37,17 @@ public:
     ~Desc1_1() { cout << "~Desc1_1()\n"; }
 };
 
+class Desc2 : public Base {
+public:
+    string getInfo() override {
+        return "Desc2 object\n";
+    }
+
+    Desc2() { cout << "Desc2()\n"; }
+
+    ~Desc2() { cout << "~Desc2()\n"; }
+};
+
 
 class _Array {
 private:
@@ -56,12 +67,12 @@ public:
     _Array(_Array& arr){
         array = arr.array; //reference semantics, если вызовется деструктор arr, то array не будет иметь доступ к памяти по этому адресу. Надо сделать глубокое копирование
         cout << "_Array(_Array& arr)\n"; 
-    } // должны скопировать всё содержимое arr;
+    } 
 
     ~_Array() { cout << "~_Array()\n"; }
 
     void SetObject(int pozition, Base* base) {
-        array[pozition] = base; //работаем с указателями, ведь 
+        array[pozition] = base; //работаем с указателями
     }
 
     void ObjectInfo(int pozition) {
@@ -80,9 +91,10 @@ int main()
     int random_number;
     for (int i = 0; i < 100; i++)
     {
-        random_number = rand() % 2;
+        random_number = rand() % 3;
         if (random_number == 0) arr.SetObject(i, new Desc1);
         if (random_number == 1) arr.SetObject(i, new Desc1_1);
+        if (random_number == 2) arr.SetObject(i, new Desc2);
     }
 
     for (int i = 0; i < 100; i++)

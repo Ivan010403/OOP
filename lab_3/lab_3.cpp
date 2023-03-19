@@ -77,6 +77,18 @@ int main()
 {
     _Array arr(100);
 
-    arr.SetObject(0, new Desc1_1);
-    arr.RemoveObj(0);
+    int random_number;
+    for (int i = 0; i < 100; i++)
+    {
+        random_number = rand() % 2;
+        if (random_number == 0) arr.SetObject(i, new Desc1);
+        if (random_number == 1) arr.SetObject(i, new Desc1_1);
+    }
+
+    for (int i = 0; i < 100; i++)
+    {
+        random_number = rand() % 3;
+        if (random_number == 0) arr.ObjectInfo(i);
+        if (random_number == 1) arr.RemoveObj(i);
+    }
 }

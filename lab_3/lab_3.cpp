@@ -26,6 +26,17 @@ public:
     ~Desc1() { cout << "~Desc1()\n"; }
 };
 
+class Desc1_1 : public Desc1 {
+public:
+    string getInfo() override {
+        return "Desc1_1 object\n";
+    }
+
+    Desc1_1() { cout << "Desc1_1()\n"; }
+
+    ~Desc1_1() { cout << "~Desc1_1()\n"; }
+};
+
 
 class _Array {
 private:
@@ -62,7 +73,7 @@ int main()
 {
     _Array arr(2);
 
-    Desc1 p;
+    Desc1_1 p;
 
     arr.SetObject(0, p);
     arr.ObjectInfo(0);

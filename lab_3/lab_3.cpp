@@ -52,6 +52,7 @@ public:
 class _Array {
 private:
     Base** array;
+    int _size;
 public:
 
     _Array() { 
@@ -59,7 +60,7 @@ public:
         cout << "_Array()\n"; 
     }
 
-    _Array(int size) { 
+    _Array(int size) : _size(size) {
         array = new Base* [size];
         cout << "_Array(int size)\n"; 
     }
@@ -69,7 +70,14 @@ public:
         cout << "_Array(_Array& arr)\n"; 
     } 
 
-    ~_Array() { cout << "~_Array()\n"; }
+    ~_Array() { 
+        for (int i = 0; i < _size; i++)
+        {
+            if (array[i]) delete[] array[i];
+        }
+        delete[] array;
+        cout << "~_Array()\n"; 
+    }
 
     void SetObject(int pozition, Base* base) {
         array[pozition] = base; //работаем с указателями
@@ -80,16 +88,18 @@ public:
     }
 
     void RemoveObj(int pozition) {
-        delete array[pozition]; 
+        delete array[pozition];
+        array[pozition] = nullptr;
     }
 };
 
 int main()
 {
-    _Array arr(100);
+    const int size = 3;
+    _Array arr(size);
 
     int random_number;
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < size; i++)
     {
         random_number = rand() % 3;
         if (random_number == 0) arr.SetObject(i, new Desc1);
@@ -97,7 +107,7 @@ int main()
         if (random_number == 2) arr.SetObject(i, new Desc2);
     }
 
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < size; i++)
     {
         random_number = rand() % 3;
         if (random_number == 0) arr.ObjectInfo(i);

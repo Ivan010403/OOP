@@ -6,6 +6,7 @@ namespace lab_4
 {
     public partial class Form1 : Form
     {
+        private bool CtrlPress = false;
         private _Array array = new _Array();
         public Form1()
         {
@@ -14,7 +15,7 @@ namespace lab_4
 
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
-            if (array.CheckClick(e.X, e.Y)==0)
+            if (array.CheckClick(e.X, e.Y, CtrlPress) == 0)
             {
                 array.AddObject(new CCircle(e.X, e.Y));
             }
@@ -28,9 +29,34 @@ namespace lab_4
             {
                 for (int i = 0; i < array.size(); i++)
                 {
-                    array.getObject(i).DrawCircle(e, this);
+                    if (array.getObject(i)!=null)
+                    {
+                        array.getObject(i).DrawCircle(e);
+                    }
                 }
                 array.set_status(true);
+            }
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode.ToString() == "ControlKey")
+            {
+                CtrlPress = true;
+            }
+
+            if (e.KeyCode.ToString() == "Delete")
+            {
+                array.RemoveAllObj();
+                this.Invalidate();
+            }
+        }
+
+        private void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode.ToString() == "ControlKey")
+            {
+                CtrlPress = false;
             }
         }
     }
@@ -51,18 +77,22 @@ namespace lab_4
             this.y = y;
         }
 
-        public int ClickOnCircle (int x_1, int y_1)
+        public int ClickOnCircle (int x_1, int y_1, bool CtrlPrs)
         {
-            if (((x_1-x)*(x_1-x) + (y-y_1)*(y-y_1)) <= ((diam/2)*(diam/2)))
+            if (((x_1-x)*(x_1-x) + (y_1-y)*(y_1-y)) <= ((diam/2)*(diam/2)))
             {
                 curr_pen = pen2;
                 return 1;
+            }
+            if ((CtrlPrs)&(curr_pen.Color.Name == pen2.Color.Name))
+            {
+                return 0;
             }
             curr_pen = pen1;
             return 0;
         }
 
-        public void DrawCircle(PaintEventArgs e, Form1 frm)
+        public void DrawCircle(PaintEventArgs e)
         {
             e.Graphics.DrawEllipse(curr_pen, x - diam/2, y - diam/2, diam, diam);
         }
@@ -74,12 +104,15 @@ namespace lab_4
         private int _size;
         private bool abildraw = true;
 
-        public int CheckClick (int x, int y)
+        public int CheckClick (int x, int y, bool CtrlPrs)
         {
             int summ = 0;
             for (int i = 0; i < _size; i++)
             {
-                summ += array[i].ClickOnCircle(x, y);
+                if (array[i] != null)
+                {
+                    summ += array[i].ClickOnCircle(x, y, CtrlPrs);
+                }
             }
             return summ;
         }
@@ -127,6 +160,13 @@ namespace lab_4
             array[pozition] = null;
         }
 
+        public void RemoveAllObj()
+        {
+            for (int i = 0; i < _size; i++)
+            {
+                array[i] = null;
+            }
+        }
         public int AddObject(CCircle crc)
         {
             abildraw = false;

@@ -66,6 +66,7 @@
             this.trackBar_B.Name = "trackBar_B";
             this.trackBar_B.Size = new System.Drawing.Size(125, 56);
             this.trackBar_B.TabIndex = 1;
+            this.trackBar_B.Scroll += new System.EventHandler(this.trackBar_B_Scroll);
             // 
             // trackBar_C
             // 
@@ -74,6 +75,7 @@
             this.trackBar_C.Name = "trackBar_C";
             this.trackBar_C.Size = new System.Drawing.Size(125, 56);
             this.trackBar_C.TabIndex = 2;
+            this.trackBar_C.Scroll += new System.EventHandler(this.trackBar_C_Scroll);
             // 
             // textBox_A
             // 
@@ -81,7 +83,6 @@
             this.textBox_A.Name = "textBox_A";
             this.textBox_A.Size = new System.Drawing.Size(125, 27);
             this.textBox_A.TabIndex = 3;
-            this.textBox_A.TextChanged += new System.EventHandler(this.textBox_A_TextChanged);
             // 
             // textBox_B
             // 
@@ -103,6 +104,7 @@
             this.numericUpDown_C.Name = "numericUpDown_C";
             this.numericUpDown_C.Size = new System.Drawing.Size(125, 27);
             this.numericUpDown_C.TabIndex = 6;
+            this.numericUpDown_C.ValueChanged += new System.EventHandler(this.numericUpDown_C_ValueChanged);
             // 
             // numericUpDown_B
             // 
@@ -110,6 +112,7 @@
             this.numericUpDown_B.Name = "numericUpDown_B";
             this.numericUpDown_B.Size = new System.Drawing.Size(125, 27);
             this.numericUpDown_B.TabIndex = 7;
+            this.numericUpDown_B.ValueChanged += new System.EventHandler(this.numericUpDown_B_ValueChanged);
             // 
             // numericUpDown_A
             // 
@@ -188,8 +191,10 @@
             this.Controls.Add(this.trackBar_C);
             this.Controls.Add(this.trackBar_B);
             this.Controls.Add(this.trackBar_A);
+            this.KeyPreview = true;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_A)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_B)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_C)).EndInit();

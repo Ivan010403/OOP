@@ -7,96 +7,106 @@ namespace lab_4_2
     {
         private int current_value;
         private Model model;
+        private bool status_enter = false;
+
 
         public Form1()
         {
             InitializeComponent();
             model = new Model();
+            UploadValues();
         }
 
 
         #region methods for A
-        private void textBox_A_TextChanged(object sender, EventArgs e)
-        {
-            current_value = Convert.ToInt16((sender as TextBox).Text);
-            model.setA(current_value);
-
-            numericUpDown_A.Value = current_value;
-            trackBar_A.Value = current_value;
-        }
 
         private void numericUpDown_A_ValueChanged(object sender, EventArgs e)
         {
             current_value = Convert.ToInt16((sender as NumericUpDown).Value);
             model.setA(current_value);
-            textBox_A.Text = Convert.ToString(current_value);
-            trackBar_A.Value = current_value;
+
+            UploadValues();
         }
 
         private void trackBar_A_Scroll(object sender, EventArgs e)
         {
             current_value = Convert.ToInt16((sender as TrackBar).Value);
             model.setA(current_value);
-            textBox_A.Text = Convert.ToString(current_value);
-            numericUpDown_A.Value = current_value;
+
+            UploadValues();
         }
         #endregion
 
-        #region methods for C
-        private void textBox_C_TextChanged(object sender, EventArgs e)
-        {
-            current_value = Convert.ToInt16((sender as TextBox).Text);
-            model.setC(current_value);
 
-            numericUpDown_C.Value = current_value;
-            trackBar_C.Value = current_value;
-        }
+        #region methods for C
 
         private void numericUpDown_C_ValueChanged(object sender, EventArgs e)
         {
             current_value = Convert.ToInt16((sender as NumericUpDown).Value);
             model.setC(current_value);
-            textBox_C.Text = Convert.ToString(current_value);
-            trackBar_C.Value = current_value;
+
+            UploadValues();
         }
 
         private void trackBar_C_Scroll(object sender, EventArgs e)
         {
             current_value = Convert.ToInt16((sender as TrackBar).Value);
             model.setC(current_value);
-            textBox_C.Text = Convert.ToString(current_value);
-            numericUpDown_C.Value = current_value;
+
+            UploadValues();
         }
         #endregion
 
 
         #region methods for B
-        private void textBox_B_TextChanged(object sender, EventArgs e)
-        {
-            current_value = Convert.ToInt16((sender as TextBox).Text);
-            model.setB(current_value);
-
-            numericUpDown_B.Value = current_value;
-            trackBar_B.Value = current_value;
-        }
 
         private void numericUpDown_B_ValueChanged(object sender, EventArgs e)
         {
             current_value = Convert.ToInt16((sender as NumericUpDown).Value);
-            model.setB(current_value);
-            textBox_B.Text = Convert.ToString(current_value);
-            trackBar_B.Value = current_value;
+
+            if (!model.setB(current_value))
+            {
+                UploadValues();
+            }
         }
 
         private void trackBar_B_Scroll(object sender, EventArgs e)
         {
             current_value = Convert.ToInt16((sender as TrackBar).Value);
-            model.setB(current_value);
-            textBox_B.Text = Convert.ToString(current_value);
-            numericUpDown_B.Value = current_value;
+
+            if (!model.setB(current_value))
+            {
+                UploadValues();
+            }
         }
         #endregion
 
+        private void UploadValues()
+        {
+            textBox_A.Text = Convert.ToString(model.getA());
+            numericUpDown_A.Value = model.getA();
+            trackBar_A.Value = model.getA();
+
+            textBox_B.Text = Convert.ToString(model.getB());
+            numericUpDown_B.Value = model.getB();
+            trackBar_B.Value = model.getB();
+
+            textBox_C.Text = Convert.ToString(model.getC());
+            numericUpDown_C.Value = model.getC();
+            trackBar_C.Value = model.getC();
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (model.setA(Convert.ToInt16(textBox_A.Text))) UploadValues();
+
+                if (model.setC(Convert.ToInt16(textBox_C.Text))) UploadValues();
+
+                if (model.setB(Convert.ToInt16(textBox_B.Text))) UploadValues();
+            }
+        }
     }
 
     public class Model
@@ -118,22 +128,52 @@ namespace lab_4_2
         }
 
         #region Getters and setters
-        public void setA(int A)
+        public bool setA(int A)
         {
-            this.A = A;
-            //return checkConditionsForA();
+            if (this.A == A)
+            {
+                checkConditionsForA();
+                return false;
+            }
+            else
+            {
+                this.A = A;
+                checkConditionsForA();
+                return true;
+            }
         }
 
-        public void setB(int B)
+        public bool setB(int B)
         {
-            this.B = B;
-            //return checkConditionsForB();
+            if (checkConditionsForB(B) == 1)
+            {
+                this.B = B;
+                return false;
+            }
+            else
+            {
+                if (this.B != B)
+                {
+                    MessageBox.Show("B is incorrect");
+                }
+                else this.B = A;
+                return true;
+            }
         }
 
-        public void setC(int C)
+        public bool setC(int C)
         {
-            this.C = C;
-            //return checkConditionsForC();
+            if (this.C == C)
+            {
+                checkConditionsForC();
+                return false;
+            }
+            else
+            {
+                this.C = C;
+                checkConditionsForC();
+                return true;
+            }
         }
 
 
@@ -153,12 +193,42 @@ namespace lab_4_2
         }
 
         #endregion
-    
-        //private bool checkConditionsForB()
-        //{
-        //    if ((B < 0) || (B > 100) || (A > B) || (B > C)) return false;
-        //    else return true;
-        //}
+        
+        
+        private void checkConditionsForA()
+        {
+            if (A > B) B = A;
+            if (A > C) C = A;
+
+            if (A > 100) A = 100;
+            if (B > 100) B = 100;
+            if (C > 100) C = 100;
+
+
+            if (A < 0) A = 0;
+            if (B < 0) B = 0;
+            if (C < 0) C = 0;
+        }
+
+        private void checkConditionsForC()
+        {
+            if (C < B) B = C;
+            if (C < A) A = C;
+
+            if (A > 100) A = 100;
+            if (B > 100) B = 100;
+            if (C > 100) C = 100;
+
+            if (A < 0) A = 0;
+            if (B < 0) B = 0;
+            if (C < 0) C = 0;
+        }
+
+        private int checkConditionsForB(int B)
+        {
+            if ((B < 0) || (B > 100) || (A > B) || (B > C)) return 0;
+            else return 1;
+        }
 
     }
 }

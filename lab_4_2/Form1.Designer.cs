@@ -18,6 +18,8 @@
                 components.Dispose();
             }
             base.Dispose(disposing);
+
+            model.SaveData();
         }
 
         #region Windows Form Designer generated code

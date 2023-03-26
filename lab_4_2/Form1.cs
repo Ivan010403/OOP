@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Reflection;
 
 namespace lab_4_2
@@ -7,8 +8,6 @@ namespace lab_4_2
     {
         private int current_value;
         private Model model;
-        private bool status_enter = false;
-
 
         public Form1()
         {
@@ -64,20 +63,18 @@ namespace lab_4_2
         {
             current_value = Convert.ToInt16((sender as NumericUpDown).Value);
 
-            if (!model.setB(current_value))
-            {
-                UploadValues();
-            }
+            model.setB(current_value);
+            
+            UploadValues();
         }
 
         private void trackBar_B_Scroll(object sender, EventArgs e)
         {
             current_value = Convert.ToInt16((sender as TrackBar).Value);
 
-            if (!model.setB(current_value))
-            {
-                UploadValues();
-            }
+            model.setB(current_value);
+
+            UploadValues();
         }
         #endregion
 
@@ -193,8 +190,9 @@ namespace lab_4_2
         }
 
         #endregion
-        
-        
+
+
+        #region Conditions
         private void checkConditionsForA()
         {
             if (A > B) B = A;
@@ -230,5 +228,15 @@ namespace lab_4_2
             else return 1;
         }
 
+        #endregion
+
+        public void SaveData()
+        {
+            readAllFile[0] = Convert.ToString(A);
+            readAllFile[1] = Convert.ToString(B);
+            readAllFile[2] = Convert.ToString(C);
+
+            File.WriteAllLines(pathToFile, readAllFile);
+        }
     }
 }

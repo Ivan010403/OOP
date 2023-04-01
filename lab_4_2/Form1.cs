@@ -12,8 +12,10 @@ namespace lab_4_2
         public Form1()
         {
             InitializeComponent();
+
             model = new Model();
-            UploadValues();
+            model.observers += new EventHandler(this.UploadValues);
+            model.observers.Invoke(this, null);
         }
 
 
@@ -23,16 +25,12 @@ namespace lab_4_2
         {
             current_value = Convert.ToInt16((sender as NumericUpDown).Value);
             model.setA(current_value);
-
-            UploadValues();
         }
 
         private void trackBar_A_Scroll(object sender, EventArgs e)
         {
             current_value = Convert.ToInt16((sender as TrackBar).Value);
             model.setA(current_value);
-
-            UploadValues();
         }
         #endregion
 
@@ -43,16 +41,12 @@ namespace lab_4_2
         {
             current_value = Convert.ToInt16((sender as NumericUpDown).Value);
             model.setC(current_value);
-
-            UploadValues();
         }
 
         private void trackBar_C_Scroll(object sender, EventArgs e)
         {
             current_value = Convert.ToInt16((sender as TrackBar).Value);
             model.setC(current_value);
-
-            UploadValues();
         }
         #endregion
 
@@ -64,8 +58,6 @@ namespace lab_4_2
             current_value = Convert.ToInt16((sender as NumericUpDown).Value);
 
             model.setB(current_value);
-            
-            UploadValues();
         }
 
         private void trackBar_B_Scroll(object sender, EventArgs e)
@@ -73,12 +65,10 @@ namespace lab_4_2
             current_value = Convert.ToInt16((sender as TrackBar).Value);
 
             model.setB(current_value);
-
-            UploadValues();
         }
         #endregion
 
-        private void UploadValues()
+        private void UploadValues(object sender, EventArgs e)
         {
             textBox_A.Text = Convert.ToString(model.getA());
             numericUpDown_A.Value = model.getA();
@@ -94,15 +84,30 @@ namespace lab_4_2
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
-        {
+       {
             if (e.KeyCode == Keys.Enter)
             {
-                if (model.setA(Convert.ToInt16(textBox_A.Text))) UploadValues();
+                model.setA(Convert.ToInt16(textBox_A.Text));
 
-                if (model.setC(Convert.ToInt16(textBox_C.Text))) UploadValues();
+                model.setB(Convert.ToInt16(textBox_B.Text));
 
-                if (model.setB(Convert.ToInt16(textBox_B.Text))) UploadValues();
+                model.setC(Convert.ToInt16(textBox_C.Text));
             }
+        }
+
+        private void textBox_A_Leave(object sender, EventArgs e)
+        {
+            model.observers.Invoke(this, null);
+        }
+
+        private void textBox_B_Leave(object sender, EventArgs e)
+        {
+            model.observers.Invoke(this, null);
+        }
+
+        private void textBox_C_Leave(object sender, EventArgs e)
+        {
+            model.observers.Invoke(this, null);
         }
     }
 
@@ -114,62 +119,55 @@ namespace lab_4_2
 
         private string[] readAllFile;
         private string pathToFile;
+
+        public System.EventHandler observers;
         public Model()
         {
             pathToFile = "C:\\Users\\vanyk\\OneDrive\\Документы\\GitHub\\OOP\\lab_4_2\\data.txt";
             readAllFile = File.ReadAllLines(pathToFile);
 
-            A = Convert.ToInt16(readAllFile[0]);
-            B = Convert.ToInt16(readAllFile[1]);
-            C = Convert.ToInt16(readAllFile[2]);
+            if (readAllFile.Length == 3)
+            {
+                A = Convert.ToInt16(readAllFile[0]);
+                B = Convert.ToInt16(readAllFile[1]);
+                C = Convert.ToInt16(readAllFile[2]);
+            }
+            else
+            {
+                MessageBox.Show("Broken file");
+            }
         }
 
         #region Getters and setters
-        public bool setA(int A)
+        public void setA(int A)
         {
-            if (this.A == A)
-            {
-                checkConditionsForA();
-                return false;
-            }
-            else
-            {
+            if (this.A != A)
+            { 
                 this.A = A;
-                checkConditionsForA();
-                return true;
+                ConditionsForA();
+                observers.Invoke(this, null);
             }
         }
 
-        public bool setB(int B)
+        public void setB(int B)
         {
-            if (checkConditionsForB(B) == 1)
-            {
-                this.B = B;
-                return false;
-            }
-            else
-            {
-                if (this.B != B)
+            if (this.B != B)
+            { 
+                if (checkConditionsForB(B))
                 {
-                    MessageBox.Show("B is incorrect");
+                    this.B = B;
                 }
-                else this.B = A;
-                return true;
+                observers.Invoke(this, null);
             }
         }
 
-        public bool setC(int C)
+        public void setC(int C)
         {
-            if (this.C == C)
-            {
-                checkConditionsForC();
-                return false;
-            }
-            else
+            if (this.C != C)
             {
                 this.C = C;
-                checkConditionsForC();
-                return true;
+                ConditionsForA();
+                observers.Invoke(this, null);
             }
         }
 
@@ -193,7 +191,7 @@ namespace lab_4_2
 
 
         #region Conditions
-        private void checkConditionsForA()
+        private void ConditionsForA()
         {
             if (A > B) B = A;
             if (A > C) C = A;
@@ -208,7 +206,7 @@ namespace lab_4_2
             if (C < 0) C = 0;
         }
 
-        private void checkConditionsForC()
+        private void ConditionsForC()
         {
             if (C < B) B = C;
             if (C < A) A = C;
@@ -222,10 +220,10 @@ namespace lab_4_2
             if (C < 0) C = 0;
         }
 
-        private int checkConditionsForB(int B)
+        private bool checkConditionsForB(int B)
         {
-            if ((B < 0) || (B > 100) || (A > B) || (B > C)) return 0;
-            else return 1;
+            if ((B < 0) || (B > 100) || (A > B) || (B > C)) return false;
+            else return true;
         }
 
         #endregion

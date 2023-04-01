@@ -85,6 +85,7 @@
             this.textBox_A.Name = "textBox_A";
             this.textBox_A.Size = new System.Drawing.Size(125, 27);
             this.textBox_A.TabIndex = 3;
+            this.textBox_A.Leave += new System.EventHandler(this.textBox_A_Leave);
             // 
             // textBox_B
             // 
@@ -92,6 +93,7 @@
             this.textBox_B.Name = "textBox_B";
             this.textBox_B.Size = new System.Drawing.Size(125, 27);
             this.textBox_B.TabIndex = 4;
+            this.textBox_B.Leave += new System.EventHandler(this.textBox_B_Leave);
             // 
             // textBox_C
             // 
@@ -99,6 +101,7 @@
             this.textBox_C.Name = "textBox_C";
             this.textBox_C.Size = new System.Drawing.Size(125, 27);
             this.textBox_C.TabIndex = 5;
+            this.textBox_C.Leave += new System.EventHandler(this.textBox_C_Leave);
             // 
             // numericUpDown_C
             // 

@@ -8,6 +8,7 @@ namespace lab_4
     {
         private bool CtrlPress = false;
         private _Array array = new _Array();
+
         public Form1()
         {
             InitializeComponent();
@@ -15,11 +16,15 @@ namespace lab_4
 
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
-            if (array.CheckClick(e.X, e.Y, CtrlPress) == 0)
+            if (!array.CheckClick(e.X, e.Y))
             {
                 array.AddObject(new CCircle(e.X, e.Y));
             }
-            array.set_status(false);
+            else
+            {
+                array.setClickOrNot(e.X, e.Y, CtrlPress);
+            }
+            array.setStatusOfDrawing(false);
             this.Invalidate();
         }
 
@@ -34,7 +39,7 @@ namespace lab_4
                         array.getObject(i).DrawCircle(e);
                     }
                 }
-                array.set_status(true);
+                array.setStatusOfDrawing(true);
             }
         }
 
@@ -65,11 +70,11 @@ namespace lab_4
     {
         private int x;
         private int y;
-        private const int diam = 50;
-        private Pen pen1 = new Pen(Color.Red, 10);
-        private Pen pen2 = new Pen(Color.Coral, 10);
+        private const int radius = 25;
+        private bool selected = false;
 
-        private Pen curr_pen = new Pen(Color.Red, 10);
+        private Pen pen1 = new Pen(Color.Red, 10);
+        private Pen pen2 = new Pen(Color.DarkBlue, 10);
 
         public CCircle(int x, int y)
         {
@@ -77,24 +82,26 @@ namespace lab_4
             this.y = y;
         }
 
-        public int ClickOnCircle (int x_1, int y_1, bool CtrlPrs)
+        public void SetStatusClicking(bool vr)
         {
-            if (((x_1-x)*(x_1-x) + (y_1-y)*(y_1-y)) <= ((diam/2)*(diam/2)))
-            {
-                curr_pen = pen2;
-                return 1;
-            }
-            if ((CtrlPrs)&(curr_pen.Color.Name == pen2.Color.Name))
-            {
-                return 0;
-            }
-            curr_pen = pen1;
-            return 0;
+            selected = vr;
+        }
+
+        public bool CheckInsideOrNot (int x_1, int y_1)
+        {
+            return (((x_1 - x) * (x_1 - x) + (y_1 - y) * (y_1 - y)) < ((radius + 5) * (radius + 5)));
         }
 
         public void DrawCircle(PaintEventArgs e)
         {
-            e.Graphics.DrawEllipse(curr_pen, x - diam/2, y - diam/2, diam, diam);
+            if (selected)
+            {
+                e.Graphics.DrawEllipse(pen2, x - radius, y - radius, radius * 2, radius * 2);
+            }
+            else
+            {
+                e.Graphics.DrawEllipse(pen1, x - radius, y - radius, radius * 2, radius * 2);
+            }
         }
     }
 
@@ -104,14 +111,14 @@ namespace lab_4
         private int _size;
         private bool abildraw = true;
 
-        public int CheckClick (int x, int y, bool CtrlPrs)
+        public bool CheckClick (int x, int y)
         {
-            int summ = 0;
+            bool summ = false;
             for (int i = 0; i < _size; i++)
             {
-                if (array[i] != null)
+                if ((array[i] != null)&&(array[i].CheckInsideOrNot(x, y)))
                 {
-                    summ += array[i].ClickOnCircle(x, y, CtrlPrs);
+                    summ = true;
                 }
             }
             return summ;
@@ -122,11 +129,37 @@ namespace lab_4
             return abildraw;
         }
 
-        public void set_status (bool result)
+        public void setStatusOfDrawing (bool result)
         {
             abildraw = result;
         }
 
+
+        public void setClickOrNot (int x, int y, bool CtrlPress)
+        {
+            for (int i = 0; i < _size; i++)
+            {
+                if (array[i].CheckInsideOrNot(x, y))
+                {
+                    array[i].SetStatusClicking(true);
+                }
+                else
+                {
+                    if (!CtrlPress)
+                    {
+                        array[i].SetStatusClicking(false);
+                    }
+                }
+            }
+        }
+
+        private void clearAllClicked()
+        {
+            for (int i = 0; i < _size; i++)
+            {
+                array[i].SetStatusClicking(false);
+            }
+        }
         public int size()
         {
             return _size;
@@ -188,6 +221,8 @@ namespace lab_4
             arr_copy[_size - 1] = crc;
 
             array = arr_copy;
+
+            clearAllClicked();
             return 0;
         }
     };

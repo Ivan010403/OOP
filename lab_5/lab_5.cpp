@@ -50,6 +50,14 @@ public:
     //-------------------------------------
 
 
+    //-------------------------------------
+
+    void checkonDesc() {
+        cout << "passengerCar or desc\n";
+    }
+
+    //-------------------------------------
+
     passengerCar() { cout << "passengerCar()\n"; }
     ~passengerCar() override { cout << "~passengerCar()\n"; }
 };
@@ -78,17 +86,53 @@ public:
 };
 
 
+
+Car out1() {
+    Car car;
+    return car;
+}
+
+
+Car out2() {
+    Car* car = new Car();
+    return *car;
+}
+
+Car* out3() {
+    Car car;
+    return &car;
+}
+
+Car* out4() {
+    Car* car = new Car();
+    return car;
+}
+
+Car& out5() {
+    Car car;
+    return car;
+}
+
+Car& out6() {
+    Car* car = new Car();
+    return *car;
+}
+
+
 int main()
 {
-    
     //-----------------------
+
     passengerCar obj;
     obj.redefinedMethod();
     obj.Car::redefinedMethod();
+
     //----------------------
+
     Car* test = new passengerCar();
     test->overridenMethod();
     delete test;
+
     //----------------------
 
     Car* test1 = new Niva4x4();
@@ -97,5 +141,22 @@ int main()
     if (test1->isA("Niva4x4")) { cout << "isA() is working!!!\n"; }
     delete test1;
 
+    //----------------------
+
+    Car* test2 = new Niva4x4();
+    if (test2->isA("passengerCar")) {
+        static_cast<passengerCar*>(test2)->checkonDesc();
+    }
+
+    if (dynamic_cast<passengerCar*>(test2)) {
+        dynamic_cast<passengerCar*>(test2)->checkonDesc();
+    }
+
+    delete test2;
+
+    //-----------------------
+    
 
 }
+
+

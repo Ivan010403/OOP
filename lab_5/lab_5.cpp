@@ -85,8 +85,6 @@ public:
     }
 };
 
-
-
 Car out1() {
     Car car;
     return car;
@@ -118,6 +116,29 @@ Car& out6() {
     return *car;
 }
 
+
+//-------------------------------------------------------------
+class Base {
+public:
+    Base() { cout << "Base()\n"; };
+    Base(Base* obj) { cout << "Base(Base* obj)\n"; };
+    Base(Base& obj) { cout << "Base(Base& obj)\n"; };
+    ~Base() { cout << "~Base()\n"; };
+};
+
+class Desc : public Base {
+public:
+    Desc() { cout << "Desc()\n"; };
+    Desc(Desc* obj) { cout << "Desc(Desc* obj)\n"; };
+    Desc(Desc& obj) { cout << "Desc(Desc& obj)\n"; };
+    ~Desc() { cout << "~Desc()\n"; };
+};
+
+void func1(Base obj) { };
+void func2(Base* obj) { };
+void func3(Base& obj) { };
+
+//--------------------------------------------------------------------
 
 int main()
 {
@@ -155,8 +176,27 @@ int main()
     delete test2;
 
     //-----------------------
-    
+    Car example = out1();
+    //-----------------------
 
+
+    cout << "\n\n";
+    Base exm;
+    Desc exm2;
+
+
+    func3(exm2);
+
+
+
+    cout << "\n\n";
+
+    //----------------------------
+
+    unique_ptr<Car> ptr(new Car());
+    shared_ptr<Car> ptr_sh(new Car());
+
+    /*unique_ptr<Car> ptr1(ptr);*/
 }
 
 

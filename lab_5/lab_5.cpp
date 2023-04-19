@@ -85,6 +85,8 @@ public:
     }
 };
 
+#pragma region out
+
 Car out1() {
     Car car;
     return car;
@@ -101,8 +103,9 @@ Car* out3() {
     return &car;
 }
 
-Car* out4() {
-    Car* car = new Car();
+unique_ptr<Car> out4() {
+    unique_ptr<Car> car(new Car());
+
     return car;
 }
 
@@ -115,7 +118,7 @@ Car& out6() {
     Car* car = new Car();
     return *car;
 }
-
+#pragma endregion
 
 //-------------------------------------------------------------
 class Base {
@@ -142,7 +145,6 @@ void func3(Base& obj) { };
 
 int main()
 {
-    //-----------------------
 
     passengerCar obj;
     obj.redefinedMethod();
@@ -176,7 +178,9 @@ int main()
     delete test2;
 
     //-----------------------
+
     Car example = out1();
+
     //-----------------------
 
 
@@ -184,8 +188,9 @@ int main()
     Base exm;
     Desc exm2;
 
+    auto p = out4();
 
-    func3(exm2);
+    func1(exm2);
 
 
 

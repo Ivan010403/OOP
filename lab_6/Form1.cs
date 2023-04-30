@@ -9,7 +9,7 @@ namespace lab_6
         private TextBox red = new TextBox();
         private TextBox green = new TextBox();
         private TextBox blue = new TextBox();
-
+        Button enter_rgb = new Button();
 
 
         private _Array array = new _Array();
@@ -46,6 +46,13 @@ namespace lab_6
         {
             current_figure = "default";
 
+
+            red.Visible = true;
+            green.Visible = true;
+            blue.Visible = true;
+            enter_rgb.Visible = true;
+
+
             red.Size = new Size(40, 20);
             green.Size = new Size(40, 20);
             blue.Size = new Size(40, 20);
@@ -58,7 +65,6 @@ namespace lab_6
             Controls.Add(green);
             Controls.Add(blue);
 
-            Button enter_rgb = new Button();
             enter_rgb.Location = new Point(700, 150);
             enter_rgb.Text = "Enter rgb";
             Controls.Add(enter_rgb);
@@ -82,6 +88,30 @@ namespace lab_6
         private void changeTheSizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             current_figure = "default";
+            enter_rgb.Visible = true;
+            red.Visible = true;
+            red.Size = new Size(40, 20);
+            red.Location = new Point(600, 100);
+            Controls.Add(red);
+
+            enter_rgb.Location = new Point(700, 150);
+            enter_rgb.Text = "Enter factor";
+            Controls.Add(enter_rgb);
+            enter_rgb.MouseClick += Enter_factor_MouseClick;
+            array.setStatusOfDrawing(false);
+        }
+
+        private void Enter_factor_MouseClick (object? sender, MouseEventArgs e)
+        {
+            for (int i = 0; i < array.size(); i++)
+            {
+                if (array.getObject(i).GetStatusClicking() == true)
+                {
+                    array.getObject(i).setFactor(Convert.ToDouble(red.Text));
+                }
+                array.setStatusOfDrawing(false);
+                this.Invalidate();
+            }
         }
 
         private void changeTheLocationToolStripMenuItem_Click(object sender, EventArgs e)
@@ -92,12 +122,24 @@ namespace lab_6
         private void deleteObjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             current_figure = "default";
+            for (int i = 0; i < array.size(); i++)
+            {
+                if (array.getObject(i).GetStatusClicking() == true)
+                {
+                    array.RemoveObj(i);
+                }
+                array.setStatusOfDrawing(false);
+                this.Invalidate();
+            }
         }
 
         private void defaultToolStripMenuItem_Click(object sender, EventArgs e)
         {
             current_figure = "default";
-
+            red.Visible = false;
+            green.Visible = false;
+            blue.Visible = false;
+            enter_rgb.Visible = false;
         }
         #endregion
 
@@ -165,6 +207,7 @@ namespace lab_6
     public class CFigure
     {
         protected bool selected = false;
+        protected double factor = 1.0;
         protected Pen pen1 = new Pen(Color.Red, 10);
         protected Pen pen2 = new Pen(Color.DarkBlue, 10);
 
@@ -191,6 +234,11 @@ namespace lab_6
         {
             pen2 = new Pen(Color.FromArgb(r, g, b), 10);
         }
+
+        public void setFactor(double fact)
+        {
+            factor = fact;
+        }
     }
 
     public class CCircle : CFigure
@@ -215,11 +263,11 @@ namespace lab_6
         {
             if (selected)
             {
-                e.Graphics.DrawEllipse(pen2, x - radius, y - radius, radius * 2, radius * 2);
+                e.Graphics.DrawEllipse(pen2, x - radius, y - radius, Convert.ToInt32(radius * 2 * factor), Convert.ToInt32(radius * 2 * factor));
             }
             else
             {
-                e.Graphics.DrawEllipse(pen1, x - radius, y - radius, radius * 2, radius * 2);
+                e.Graphics.DrawEllipse(pen1, x - radius, y - radius, Convert.ToInt32(radius * 2 * factor), Convert.ToInt32(radius * 2 * factor));
             }
         }
 

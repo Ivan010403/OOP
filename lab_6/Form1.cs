@@ -1,13 +1,18 @@
 using System.Collections.Specialized;
+using System.Windows.Forms;
 using static System.ComponentModel.Design.ObjectSelectorEditor;
 
 namespace lab_6
 {
     public partial class Form1 : Form
     {
+        private TextBox red = new TextBox();
+        private TextBox green = new TextBox();
+        private TextBox blue = new TextBox();
+
+
         private _Array array = new _Array();
         private string current_figure = "default";
-        private string current_action = "default";
 
         public Form1()
         {
@@ -37,32 +42,60 @@ namespace lab_6
 
         private void changeTheColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            current_action = "color";
             current_figure = "default";
-    }
+
+            red.Size = new Size(40, 20);
+            green.Size = new Size(40, 20);
+            blue.Size = new Size(40, 20);
+
+            red.Location = new Point(600, 100);
+            green.Location = new Point(600, 150);
+            blue.Location = new Point(600, 200);
+
+            Controls.Add(red);
+            Controls.Add(green);
+            Controls.Add(blue);
+
+            Button enter_rgb = new Button();
+            enter_rgb.Location = new Point(700, 150);
+            enter_rgb.Text = "Enter rgb";
+            Controls.Add(enter_rgb);
+            enter_rgb.MouseClick += Enter_rgb_MouseClick;
+            array.setStatusOfDrawing(false);
+        }
+
+        private void Enter_rgb_MouseClick(object? sender, MouseEventArgs e)
+        {
+            for (int i = 0; i < array.size(); i++)
+            {
+                if (array.getObject(i).GetStatusClicking()==true)
+                {
+                    array.getObject(i).setPen(Convert.ToInt32(red.Text), Convert.ToInt32(green.Text), Convert.ToInt32(blue.Text));
+                }
+            }
+            array.setStatusOfDrawing(false);
+            this.Invalidate();
+        }
 
         private void changeTheSizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            current_action = "size";
             current_figure = "default";
         }
 
         private void changeTheLocationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            current_action = "location";
             current_figure = "default";
         }
 
         private void deleteObjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            current_action = "delete";
             current_figure = "default";
         }
 
         private void defaultToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            current_action = "default";
             current_figure = "default";
+
         }
         #endregion
 
@@ -126,10 +159,19 @@ namespace lab_6
         {
             selected = vr;
         }
+        public bool GetStatusClicking()
+        {
+            return selected;
+        }
 
         public virtual void draw (PaintEventArgs e)
         {
             return;
+        }
+
+        public void setPen(int r, int g, int b)
+        {
+            pen2 = new Pen(Color.FromArgb(r, g, b), 10);
         }
     }
 

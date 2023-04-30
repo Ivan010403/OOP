@@ -162,7 +162,7 @@ namespace lab_6
                         array.AddObject(new CTriangle(e.X, e.Y));
                         break;
                     case "rectangle":
-                        //array.AddObject(new CRectangle(e.X, e.Y));
+                        array.AddObject(new CRectangle(e.X, e.Y));
                         break;
                     case "default":
                         break;
@@ -248,6 +248,7 @@ namespace lab_6
 
         public class CFigure
         {
+            protected int x, y;
             protected bool selected = false;
             protected double factor = 1.0;
             protected Pen pen1 = new Pen(Color.Red, 10);
@@ -290,8 +291,6 @@ namespace lab_6
 
         public class CCircle : CFigure
         {
-            private int x;
-            private int y;
             private const int radius = 25;
 
 
@@ -328,8 +327,6 @@ namespace lab_6
 
         public class CTriangle : CFigure
         {
-            int x, y;
-
             private Point[] points = new Point[3];
 
             public CTriangle(int x, int y)
@@ -383,9 +380,49 @@ namespace lab_6
 
         public class CRectangle : CFigure
         {
+            private Point[] points = new Point[4];
+            public CRectangle(int x, int y)
+            {
+                this.x = x;
+                this.y = y;
+            }
+            private void setVertices()
+            {
+                points[0].X = x - Convert.ToInt32(20 * factor); points[0].Y = y + Convert.ToInt32(20 * factor);
+                points[1].X = x - Convert.ToInt32(20 * factor); points[1].Y = y - Convert.ToInt32(20 * factor);
+                points[2].X = x + Convert.ToInt32(20 * factor); points[2].Y = y - Convert.ToInt32(20 * factor);
+                points[3].X = x + Convert.ToInt32(20 * factor); points[3].Y = y + Convert.ToInt32(20 * factor);
+            }
+
             public override bool CheckInsideOrNot(int x_1, int y_1)
             {
-                return false;
+                if ((x_1 >= points[1].X) && (x_1 <= points[3].X) && (y_1 >= points[1].Y) && (y_1 <= points[3].Y))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            public override void draw(PaintEventArgs e)
+            {
+                setVertices();
+                if (selected)
+                {
+                    e.Graphics.DrawPolygon(pen2, points);
+                }
+                else
+                {
+                    e.Graphics.DrawPolygon(pen1, points);
+                }
+            }
+
+            public override void changePosition(int x, int y)
+            {
+                this.x = this.x + x;
+                this.y = this.y + y;
             }
         }
 

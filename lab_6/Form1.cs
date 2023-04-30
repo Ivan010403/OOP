@@ -11,8 +11,10 @@ namespace lab_6
         private TextBox blue = new TextBox();
 
 
+
         private _Array array = new _Array();
         private string current_figure = "default";
+        private bool CtrlPress = false;
 
         public Form1()
         {
@@ -120,7 +122,7 @@ namespace lab_6
             }
             else
             {
-                array.setStatus(e.X, e.Y);
+                array.setStatus(e.X, e.Y, CtrlPress);
             }
             
             
@@ -140,6 +142,22 @@ namespace lab_6
                     }
                 }
                 array.setStatusOfDrawing(true);
+            }
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode.ToString() == "ControlKey")
+            {
+                CtrlPress = true;
+            }
+        }
+
+        private void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode.ToString() == "ControlKey")
+            {
+                CtrlPress = false;
             }
         }
     }
@@ -405,7 +423,7 @@ namespace lab_6
         }
 
 
-        public void setStatus(int x, int y)
+        public void setStatus(int x, int y, bool CtrlPress)
         {
             for (int i = 0; i < _size; i++)
             {
@@ -415,7 +433,10 @@ namespace lab_6
                 }
                 else
                 {
-                    array[i].SetStatusClicking(false);
+                    if (!CtrlPress)
+                    {
+                        array[i].SetStatusClicking(false);
+                    }
                 }
             }
         }

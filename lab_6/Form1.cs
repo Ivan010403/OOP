@@ -328,22 +328,28 @@ namespace lab_6
 
         public class CTriangle : CFigure
         {
-            private int initial_x, initial_y;
+            int x, y;
 
-            int[] x = new int[3];
-            int[] y = new int[3];
+            private Point[] points = new Point[3];
 
             public CTriangle(int x, int y)
             {
-                this.initial_x = x;
-                this.initial_y = y;
+                this.x = x;
+                this.y = y;
+            }
+
+            private void setVertices ()
+            {
+                points[0].X = x - Convert.ToInt32(30 * factor); points[0].Y = y + Convert.ToInt32(20 * factor);
+                points[1].X = x; points[1].Y = y - Convert.ToInt32(20 * factor);
+                points[2].X = x + Convert.ToInt32(30 * factor); points[2].Y = y + Convert.ToInt32(20 * factor);
             }
 
             public override bool CheckInsideOrNot(int x_1, int y_1)
             {
-                int a = (x[0] - x_1) * (y[1] - y[0]) - (x[1] - x[0]) * (y[0] - y_1);
-                int b = (x[1] - x_1) * (y[2] - y[1]) - (x[2] - x[1]) * (y[1] - y_1);
-                int c = (x[2] - x_1) * (y[0] - y[2]) - (x[0] - x[2]) * (y[2] - y_1);
+                int a = (points[0].X - x_1) * (points[1].Y - points[0].Y) - (points[1].X - points[0].X) * (points[0].Y - y_1);
+                int b = (points[1].X - x_1) * (points[2].Y - points[1].Y) - (points[2].X - points[1].X) * (points[1].Y - y_1);
+                int c = (points[2].X - x_1) * (points[0].Y - points[2].Y) - (points[0].X - points[2].X) * (points[2].Y - y_1);
 
                 if ((a >= 0 && b >= 0 && c >= 0) || (a <= 0 && b <= 0 && c <= 0))
                 {
@@ -353,6 +359,25 @@ namespace lab_6
                 {
                     return false;
                 }
+            }
+
+            public override void draw(PaintEventArgs e)
+            {
+                setVertices();
+                if (selected)
+                {
+                    e.Graphics.DrawPolygon(pen2, points);
+                }
+                else
+                {
+                    e.Graphics.DrawPolygon(pen1, points);
+                }
+            }
+
+            public override void changePosition(int x, int y)
+            {
+                this.x = this.x + x;
+                this.y = this.y + y;
             }
         }
 

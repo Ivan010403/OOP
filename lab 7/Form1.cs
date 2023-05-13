@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.ConstrainedExecution;
+using System.Text;
 using System.Windows.Forms;
 using static System.ComponentModel.Design.ObjectSelectorEditor;
 
@@ -227,7 +228,7 @@ namespace lab_7
             return;
         }
 
-        public virtual void load(string path, string data)
+        public virtual void load(StreamReader fstream)
         {
             return;
         }
@@ -312,9 +313,15 @@ namespace lab_7
             File.WriteAllLines(path, contents);
         }
 
-        public override void load(string path , string data)
+        public override void load(StreamReader fstream)
         {
-            string[] lines = File.ReadAllLines(path);
+            string data = fstream.ReadLine();
+
+            var all_data = data.Split(' ');
+
+            this.x = Convert.ToInt32(all_data[0]);
+            this.y = Convert.ToInt32(all_data[1]);
+            this.radius = Convert.ToInt32(all_data[2]);
         }
     }
 
@@ -327,6 +334,10 @@ namespace lab_7
         {
             this.x = x;
             this.y = y;
+        }
+
+        public CTriangle()
+        {
         }
 
         private void setVertices()
@@ -417,6 +428,11 @@ namespace lab_7
             this.x = x;
             this.y = y;
         }
+
+        public CRectangle()
+        {
+        }
+
         private void setVertices()
         {
             points[0].X = x - a; points[0].Y = y + a;
@@ -746,41 +762,48 @@ namespace lab_7
             return;
         }
 
-        public virtual CFigure createFigure(string code, string data)
+        public virtual CFigure createFigure(string code)
         {
             return null;
         }
 
         public void loadFigures (string path)
         {
-            FileStream fstream = new FileStream("test.txt", FileMode.OpenOrCreate);
+            StreamReader fstream = new StreamReader(path);
+            string line = fstream.ReadLine();
+            int count = Convert.ToInt32 (line);
 
-            string[] lines = File.ReadAllLines(path);
+            string code;
+            CFigure fig;
 
-            for (int i = 0; i < lines.Length; i = i + 2)
+            for (int i = 0; i < count; i = i + 2)
             {
-                AddObject(createFigure(lines[i], lines[i + 1]));
+                code = fstream.ReadLine();
+
+                fig = createFigure(code);
+                
+                if (fig!= null)
+                {
+                    fig.load(fstream);
+
+                    AddObject(fig);
+                }
             }
         }
     }
 
     public class _Array_factory: _Array
     {
-        public override CFigure createFigure(string code, string data)
+        public override CFigure createFigure(string code)
         {
-            var array = data.Split(' ');
-
-            int x = Convert.ToInt32(array[0]);
-            int y = Convert.ToInt32(array[0]);
-
             switch (code)
             {
                 case "C":
-                    return new CCircle(x, y);
+                    return new CCircle();
                 case "T":
-                    return new CTriangle(x, y);
+                    return new CTriangle();
                 case "R":
-                    return new CRectangle(x, y);
+                    return new CRectangle();
                 default:
                     break;
             }

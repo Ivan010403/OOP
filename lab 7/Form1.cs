@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Specialized;
 using System.DirectoryServices;
+using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.ConstrainedExecution;
 using System.Windows.Forms;
 using static System.ComponentModel.Design.ObjectSelectorEditor;
@@ -171,7 +173,6 @@ namespace lab_7
                 changeSize = false;
             }
         }
-
     }
     public class CFigure
     {
@@ -220,6 +221,16 @@ namespace lab_7
         {
             return false;
         }
+
+        public virtual void save(string path)
+        {
+            return;
+        }
+
+        public virtual void load(string path, string data)
+        {
+            return;
+        }
     }
 
     public class CCircle : CFigure
@@ -230,6 +241,10 @@ namespace lab_7
         {
             this.x = x;
             this.y = y;
+        }
+
+        public CCircle()
+        {
         }
 
         public override bool CheckInsideOrNot(int x_1, int y_1)
@@ -283,6 +298,23 @@ namespace lab_7
                 return false;
             }
             else return true;
+        }
+
+
+        public override void save(string path)
+        {
+            string[] contents = new string[3];
+
+            contents[0] = Convert.ToString(x);
+            contents[1] = Convert.ToString(y);
+            contents[2] = Convert.ToString(radius);
+
+            File.WriteAllLines(path, contents);
+        }
+
+        public override void load(string path , string data)
+        {
+            string[] lines = File.ReadAllLines(path);
         }
     }
 
@@ -688,7 +720,7 @@ namespace lab_7
                 array[i] = null;
             }
         }
-        public int AddObject(CFigure crc)
+        public void AddObject(CFigure crc)
         {
             abildraw = false;
             for (int i = 0; i < _size; i++)
@@ -696,7 +728,7 @@ namespace lab_7
                 if (array[i] == null)
                 {
                     SetObject(i, crc);
-                    return 0;
+                    return;
                 }
             }
 
@@ -711,7 +743,48 @@ namespace lab_7
             array = arr_copy;
 
             clearAllClicked();
-            return 0;
+            return;
+        }
+
+        public virtual CFigure createFigure(string code, string data)
+        {
+            return null;
+        }
+
+        public void loadFigures (string path)
+        {
+            FileStream fstream = new FileStream("test.txt", FileMode.OpenOrCreate);
+
+            string[] lines = File.ReadAllLines(path);
+
+            for (int i = 0; i < lines.Length; i = i + 2)
+            {
+                AddObject(createFigure(lines[i], lines[i + 1]));
+            }
+        }
+    }
+
+    public class _Array_factory: _Array
+    {
+        public override CFigure createFigure(string code, string data)
+        {
+            var array = data.Split(' ');
+
+            int x = Convert.ToInt32(array[0]);
+            int y = Convert.ToInt32(array[0]);
+
+            switch (code)
+            {
+                case "C":
+                    return new CCircle(x, y);
+                case "T":
+                    return new CTriangle(x, y);
+                case "R":
+                    return new CRectangle(x, y);
+                default:
+                    break;
+            }
+            return null;
         }
     }
 }

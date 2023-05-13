@@ -55,15 +55,17 @@ namespace lab_6
         {
             if (!array.drawed())
             {
+                graph.Clear(BackColor);
                 for (int i = 0; i < array.size(); i++)
                 {
                     if (array.getObject(i) != null)
                     {
                         array.getObject(i).draw(e, graph);
+                        this.pictureBox2.Invalidate();
                     }
                 }
                 array.setStatusOfDrawing(true);
-                
+
             }
         }
 
@@ -126,7 +128,6 @@ namespace lab_6
                     array.setStatusOfDrawing(false);
                 }
                 initial_x = e.X;
-                initial_y = e.Y;
                 array.setStatusOfDrawing(false);
             }
         }
@@ -143,7 +144,6 @@ namespace lab_6
             {
                 changeSize = true;
                 initial_x = e.X;
-                initial_y = e.Y;
             }
         }
 
@@ -164,8 +164,8 @@ namespace lab_6
     public class CFigure
     {
         protected int x, y;
-        protected int size = 0; //
         protected bool selected = false;
+
 
         protected Pen pen1 = new Pen(Color.Red, 10);
         protected Pen pen2 = new Pen(Color.DarkBlue, 10);
@@ -203,12 +203,20 @@ namespace lab_6
         {
             return;
         }
+
+        public virtual bool CheckBorders()
+        {
+            return false;
+        }
+        public virtual bool CheckBorders(int x, int y)
+        {
+            return false;
+        }
     }
 
     public class CCircle : CFigure
     {
-        private const int radius = 25;
-
+        private int radius = 25;
 
         public CCircle(int x, int y)
         {
@@ -225,17 +233,17 @@ namespace lab_6
         {
             if (selected)
             {
-                graph.DrawEllipse(pen2, x - Convert.ToInt32(radius + size / 2), y - Convert.ToInt32(radius + size / 2), Convert.ToInt32(radius * 2 + size), Convert.ToInt32(radius * 2 + size));
+                graph.DrawEllipse(pen2, x - radius, y - radius, radius * 2, radius * 2);
             }
             else
             {
-                graph.DrawEllipse(pen1, x - Convert.ToInt32(radius + size / 2), y - Convert.ToInt32(radius + size / 2), Convert.ToInt32(radius * 2 + size), Convert.ToInt32(radius * 2 + size));
+                graph.DrawEllipse(pen1, x - radius, y - radius, radius * 2, radius * 2);
             }
         }
 
         public override void changePositionIfPossible(int x, int y)
         {
-            if (!(((this.x + radius + this.size / 2 > 800) && (x > 0)) || ((this.x - radius - this.size / 2 < 0) && (x < 0)) || ((this.y - radius - this.size / 2 < 0) && (y < 0)) || ((this.y + radius + this.size / 2 > 450) && (y > 0))))
+            if (CheckBorders(x, y))
             {
                 this.x = this.x + x;
                 this.y = this.y + y;
@@ -243,27 +251,47 @@ namespace lab_6
         }
         public override void ChangeSizeIfPossible(int dx_1) //сделать отдельную функцию
         {
-            if (!((this.x + radius + this.size / 2 > 800) || (this.x - radius - this.size / 2 < 0) || (this.y - radius - this.size / 2 < 0) || (this.y + radius + this.size / 2 > 450)))
+            if (CheckBorders())
             {
-                this.size = this.size + dx_1;
+                radius = radius + dx_1;
             }
             else
             {
                 if (dx_1 < 0)
                 {
-                    this.size = this.size + dx_1;
+                    radius = radius + dx_1;
                 }
             }
-            if (this.size < 0)
+            if (radius < 25)
             {
-                this.size = 0;
+                radius = 25;
             }
+        }
+
+        public override bool CheckBorders()
+        {
+            if ((this.x + radius > 800) || (this.x - radius < 0) || (this.y - radius < 0) || (this.y + radius > 417))
+            {
+                return false;
+            }
+            else return true; 
+        }
+
+        public override bool CheckBorders(int x, int y)
+        {
+            if (((this.x + radius > 800) && (x > 0)) || ((this.x - radius < 0) && (x < 0)) || ((this.y - radius < 0) && (y < 0)) || ((this.y + radius > 417) && (y > 0)))
+            {
+                return false;
+            }
+            else return true;
         }
     }
 
     public class CTriangle : CFigure
     {
         private Point[] points = new Point[3];
+        private int a = 30;
+        private int b = 20;
         public CTriangle(int x, int y)
         {
             this.x = x;
@@ -272,9 +300,9 @@ namespace lab_6
 
         private void setVertices()
         {
-            points[0].X = x - Convert.ToInt32(30 + size); points[0].Y = y + Convert.ToInt32(20 + size);
-            points[1].X = x; points[1].Y = y - Convert.ToInt32(20 + size);
-            points[2].X = x + Convert.ToInt32(30 + size); points[2].Y = y + Convert.ToInt32(20 + size);
+            points[0].X = x - a; points[0].Y = y + b;
+            points[1].X = x; points[1].Y = y - b;
+            points[2].X = x + a; points[2].Y = y + b;
         }
 
         public override bool CheckInsideOrNot(int x_1, int y_1)
@@ -308,7 +336,7 @@ namespace lab_6
 
         public override void changePositionIfPossible(int x, int y)
         {
-            if (!(((this.x + x - 30 - size < 0) && (x < 0)) || ((this.x + x + 30 + size > 800) && (x > 0)) || ((this.y - 20 - size < 0) && (y < 0)) || ((this.y + 20 + size > 450) && (y > 0))))
+            if (CheckBorders(x,y))
             {
                 this.x = this.x + x;
                 this.y = this.y + y;
@@ -316,27 +344,41 @@ namespace lab_6
         }
         public override void ChangeSizeIfPossible(int dx_1)
         {
-            if (!CheckBorders())
+            if (CheckBorders())
             {
-                this.size = this.size + dx_1;
+                a = a + dx_1;
+                b = b + dx_1;
             }
             else
             {
                 if (dx_1 < 0)
                 {
-                    this.size = this.size + dx_1;
+                    a = a + dx_1;
+                    b = b + dx_1;
                 }
             }
-            if (this.size < 0)
+            if (a < 30) 
             {
-                this.size = 0;
-
+                a = 30;
+            }
+            if (b < 20)
+            {
+                b = 20;
             }
         }
 
-        public bool CheckBorders()
+        public override bool CheckBorders()
         {
-            if ((this.x + 30 + size > 800) || (this.x - 30 - size < 0) || (this.y - 2 - size < 0) || (this.y + 20 + size > 450))
+            if ((this.x + a > 790) || (this.x - a < 10) || (this.y - b < 10) || (this.y + b > 407))
+            {
+                return false;
+            }
+            else return true;
+        }
+
+        public override bool CheckBorders(int x, int y)
+        {
+            if (((this.x - a < 10) && (x < 0)) || ((this.x + a > 790) && (x > 0)) || ((this.y - b < 10) && (y < 0)) || ((this.y + b > 407) && (y > 0)))
             {
                 return false;
             }
@@ -347,6 +389,7 @@ namespace lab_6
     public class CRectangle : CFigure
     {
         private Point[] points = new Point[4];
+        private int a = 20;
         public CRectangle(int x, int y)
         {
             this.x = x;
@@ -354,10 +397,10 @@ namespace lab_6
         }
         private void setVertices()
         {
-            points[0].X = x - Convert.ToInt32(20 + size); points[0].Y = y + Convert.ToInt32(20 + size);
-            points[1].X = x - Convert.ToInt32(20 + size); points[1].Y = y - Convert.ToInt32(20 + size);
-            points[2].X = x + Convert.ToInt32(20 + size); points[2].Y = y - Convert.ToInt32(20 + size);
-            points[3].X = x + Convert.ToInt32(20 + size); points[3].Y = y + Convert.ToInt32(20 + size);
+            points[0].X = x - a; points[0].Y = y + a;
+            points[1].X = x - a; points[1].Y = y - a;
+            points[2].X = x + a; points[2].Y = y - a;
+            points[3].X = x + a; points[3].Y = y + a;
 
         }
 
@@ -388,7 +431,7 @@ namespace lab_6
 
         public override void changePositionIfPossible(int x, int y)
         {
-            if (!(((this.x - 20 - size < 0) && (x < 0)) || ((this.x + 20 + size > 800) && (x > 0)) || (((this.y - 20 - size) < 0) && (y < 0)) || ((this.y + 20 + size > 450) && (y > 0))))
+            if (CheckBorders(x,y))
             {
                 this.x = this.x + x;
                 this.y = this.y + y;
@@ -397,21 +440,39 @@ namespace lab_6
 
         public override void ChangeSizeIfPossible(int dx_1)
         {
-            if (!((this.x - 20 - size < 0) || (this.x + 20 + size > 800) || ((this.y - 20 - size) < 0) || (this.y + 20 + size > 450)))
+            if (CheckBorders())
             {
-                this.size = this.size + dx_1;
+                a = a + dx_1;
             }
             else
             {
                 if (dx_1 < 0)
                 {
-                    this.size = this.size + dx_1;
+                    a = a + dx_1;
                 }
             }
-            if (this.size < 0)
+            if (a < 20)
             {
-                this.size = 0;
+                a = 20;
             }
+        }
+
+        public override bool CheckBorders()
+        {
+            if ((this.x - a < 10) || (this.x + a > 790) || (this.y - a < 10) || (this.y + a > 407))
+            {
+                return false;
+            }
+            else return true;
+        }
+
+        public override bool CheckBorders(int x, int y)
+        {
+            if (((this.x - a < 10) && (x < 0)) || ((this.x + a > 790) && (x > 0)) || ((this.y - a < 10) && (y < 0)) || ((this.y + a > 407) && (y > 0)))
+            {
+                return false;
+            }
+            else return true;
         }
     }
 
@@ -531,7 +592,7 @@ namespace lab_6
         }
     }
 }
-    
+
 
 
 

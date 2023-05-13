@@ -14,10 +14,6 @@ namespace lab_7
 {
     public partial class Form1 : Form
     {
-        private TextBox red = new TextBox();
-        private TextBox green = new TextBox();
-        private TextBox blue = new TextBox();
-        private Button enter_rgb = new Button();
         private ColorDialog clr = new ColorDialog();
         private Color curr_color = new Color();
 
@@ -91,21 +87,22 @@ namespace lab_7
                     case "circle":
                         array.AddObject(new CCircle(e.X, e.Y));
                         array.setStatusOfDrawing(false);
+                        group.ungrouping(array);
                         break;
                     case "triangle":
                         array.AddObject(new CTriangle(e.X, e.Y));
                         array.setStatusOfDrawing(false);
+                        group.ungrouping(array);
                         break;
                     case "rectangle":
                         array.AddObject(new CRectangle(e.X, e.Y));
                         array.setStatusOfDrawing(false);
+                        group.ungrouping(array);
                         break;
                     case "default":
                         break;
                 }
-
-                group.ungrouping(array);
-
+                array.setStatus(e.X, e.Y, CtrlPress);
                 this.pictureBox2.Invalidate();
             }
             else
@@ -223,7 +220,7 @@ namespace lab_7
             return false;
         }
 
-        public virtual void save(string path)
+        public virtual void save(StreamWriter fstream)
         {
             return;
         }
@@ -302,15 +299,15 @@ namespace lab_7
         }
 
 
-        public override void save(string path)
+        public override void save(StreamWriter fstream)
         {
-            string[] contents = new string[3];
+            fstream.WriteLine("C");
+            string x = Convert.ToString(this.x);
+            string y = Convert.ToString(this.y);
+            string radius = Convert.ToString(this.radius);
 
-            contents[0] = Convert.ToString(x);
-            contents[1] = Convert.ToString(y);
-            contents[2] = Convert.ToString(radius);
-
-            File.WriteAllLines(path, contents);
+            string data = x + " " + y + " " + radius;  
+            fstream.WriteLine(data);
         }
 
         public override void load(StreamReader fstream)
@@ -417,6 +414,30 @@ namespace lab_7
             }
             else return true;
         }
+
+        public override void load(StreamReader fstream)
+        {
+            string data = fstream.ReadLine();
+
+            var all_data = data.Split(' ');
+
+            this.x = Convert.ToInt32(all_data[0]);
+            this.y = Convert.ToInt32(all_data[1]);
+            this.a = Convert.ToInt32(all_data[2]);
+            this.b = Convert.ToInt32(all_data[3]);
+        }
+
+        public override void save(StreamWriter fstream)
+        {
+            fstream.WriteLine("T");
+            string x = Convert.ToString(this.x);
+            string y = Convert.ToString(this.y);
+            string a = Convert.ToString(this.a);
+            string b = Convert.ToString(this.b);
+
+            string data = x + " " + y + " " + a + " " + b;
+            fstream.WriteLine(data);
+        }
     }
 
     public class CRectangle : CFigure
@@ -503,12 +524,35 @@ namespace lab_7
             }
             else return true;
         }
+
+        public override void load(StreamReader fstream)
+        {
+            string data = fstream.ReadLine();
+
+            var all_data = data.Split(' ');
+
+            this.x = Convert.ToInt32(all_data[0]);
+            this.y = Convert.ToInt32(all_data[1]);
+            this.a = Convert.ToInt32(all_data[2]);
+        }
+
+        public override void save(StreamWriter fstream)
+        {
+            fstream.WriteLine("R");
+            string x = Convert.ToString(this.x);
+            string y = Convert.ToString(this.y);
+            string a = Convert.ToString(this.a);
+            
+
+            string data = x + " " + y + " " + a;
+            fstream.WriteLine(data);
+        }
     }
 
 
     public class CGroup : CFigure
     {
-        private int count;
+        private int count = 0;
         private bool status_of_drawing;
         private CFigure[] figures;
 
@@ -621,7 +665,27 @@ namespace lab_7
         public void delete()
         {
             figures = new CFigure[0];
-            count = 0;
+        }
+
+        public void setCount(int a)
+        {
+            count = a;
+        }
+
+        public override void save(StreamWriter fstream)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                figures[i].save(fstream);
+            }
+        }
+
+        public void setPen(Color clr)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                figures[i].setPen(clr);
+            }
         }
     }
 
@@ -767,16 +831,16 @@ namespace lab_7
             return null;
         }
 
-        public void loadFigures (string path)
+        public void loadFigures (string path, _Array array)
         {
             StreamReader fstream = new StreamReader(path);
             string line = fstream.ReadLine();
-            int count = Convert.ToInt32 (line);
+            int count_load = Convert.ToInt32 (line);
 
             string code;
             CFigure fig;
 
-            for (int i = 0; i < count; i = i + 2)
+            for (int i = 0; i < count_load; i++)
             {
                 code = fstream.ReadLine();
 
@@ -786,7 +850,7 @@ namespace lab_7
                 {
                     fig.load(fstream);
 
-                    AddObject(fig);
+                    array.AddObject(fig);
                 }
             }
         }

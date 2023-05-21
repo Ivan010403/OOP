@@ -48,9 +48,12 @@ namespace lab_7
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.groupingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ungroupingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
+
             // 
             // menuStrip1
             // 
@@ -59,7 +62,9 @@ namespace lab_7
             this.figuresToolStripMenuItem,
             this.actionsToolStripMenuItem,
             this.saveToolStripMenuItem,
-            this.loadToolStripMenuItem});
+            this.loadToolStripMenuItem,
+            this.groupingToolStripMenuItem,
+            this.ungroupingToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(800, 28);
@@ -178,15 +183,28 @@ namespace lab_7
             this.pictureBox2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox2_MouseMove);
             this.pictureBox2.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox2_MouseUp);
             this.graph = Graphics.FromImage(pictureBox2.Image);
+
             // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
+            // groupingToolStripMenuItem
+            // 
+            this.groupingToolStripMenuItem.Name = "groupingToolStripMenuItem";
+            this.groupingToolStripMenuItem.Size = new System.Drawing.Size(85, 24);
+            this.groupingToolStripMenuItem.Text = "Grouping";
+            this.groupingToolStripMenuItem.Click += new System.EventHandler(this.groupingToolStripMenuItem_Click);
+            // 
+            // ungroupingToolStripMenuItem
+            // 
+            this.ungroupingToolStripMenuItem.Name = "ungroupingToolStripMenuItem";
+            this.ungroupingToolStripMenuItem.Size = new System.Drawing.Size(102, 24);
+            this.ungroupingToolStripMenuItem.Text = "Ungrouping";
+            this.ungroupingToolStripMenuItem.Click += new System.EventHandler(this.ungroupingToolStripMenuItem_Click);
+            // 
             // Form1
             // 
-
-
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
@@ -225,5 +243,7 @@ namespace lab_7
         private ToolStripMenuItem loadToolStripMenuItem;
         private OpenFileDialog openFileDialog1;
         private SaveFileDialog saveFileDialog1;
+        private ToolStripMenuItem groupingToolStripMenuItem;
+        private ToolStripMenuItem ungroupingToolStripMenuItem;
     }
 }

@@ -57,7 +57,7 @@ namespace lab_7
 
         private void pictureBox2_Paint(object sender, PaintEventArgs e)
         {
-            if ((!array.drawed()) || (!group.drawed()))
+            if (!array.drawed())
             {
                 graph.Clear(BackColor);
                 for (int i = 0; i < array.size(); i++)
@@ -68,79 +68,71 @@ namespace lab_7
                         this.pictureBox2.Invalidate();
                     }
                 }
-                for (int i = 0; i < group.size(); i++)
-                {
-                    group.draw(e, graph);
-                    this.pictureBox2.Invalidate();
-                }
                 array.setStatusOfDrawing(true);
-                group.setStatusOfDrawingForGroup(true);
             }
         }
 
         private void pictureBox2_MouseClick(object sender, MouseEventArgs e)
         {
-            if (!array.CheckClick(e.X, e.Y))
+            if (!array.ClickOnScreen(e.X, e.Y, CtrlPress))
             {
                 switch (current_figure)
                 {
                     case "circle":
                         array.AddObject(new CCircle(e.X, e.Y));
-                        array.setStatusOfDrawing(false);
-                        group.ungrouping(array);
                         break;
                     case "triangle":
                         array.AddObject(new CTriangle(e.X, e.Y));
-                        array.setStatusOfDrawing(false);
-                        group.ungrouping(array);
                         break;
                     case "rectangle":
                         array.AddObject(new CRectangle(e.X, e.Y));
-                        array.setStatusOfDrawing(false);
-                        group.ungrouping(array);
                         break;
                     case "default":
                         break;
                 }
-                array.setStatus(e.X, e.Y, CtrlPress);
-                this.pictureBox2.Invalidate();
             }
-            else
-            {
-                array.setStatus(e.X, e.Y, CtrlPress);
-                int[] index = array.getIndexObjectFromXY(e.X, e.Y);
 
-                for (int i = 0; i < index.Length; i++)
-                {
-                    group.addFigure(array.getObject(index[i]));
-                    array.RemoveObj(index[i]);
-                    group.setStatusOfDrawingForGroup(false);
-                }
-                this.pictureBox2.Invalidate();
-            }
+            array.setStatusOfDrawing(false);
+            this.pictureBox2.Invalidate();
         }
 
         private void pictureBox2_MouseMove(object sender, MouseEventArgs e)
         {
             if (changePosition)
             {
-                group.changePositionIfPossible(e.X - initial_x, e.Y - initial_y);
-                    
+                for (int i = 0; i < array.size(); i++)
+                {
+                    if (array.getObject(i)!=null)
+                    {
+                        if (array.getObject(i).GetStatusClicking() == true)
+                        {
+                            array.getObject(i).changePositionIfPossible(e.X - initial_x, e.Y - initial_y);
+                        }
+                        this.pictureBox2.Invalidate();
+                        array.setStatusOfDrawing(false);
+                    }
+                }
                 initial_x = e.X;
                 initial_y = e.Y;
-
-                this.pictureBox2.Invalidate();
-                group.setStatusOfDrawingForGroup(false);
+                array.setStatusOfDrawing(false);
             }
 
             if (changeSize)
             {
-                group.ChangeSizeIfPossible(e.X - initial_x);
-               
+                for (int i = 0; i < array.size(); i++)
+                {
+                    if (array.getObject(i)!= null)
+                    {
+                        if (array.getObject(i).GetStatusClicking() == true)
+                        {
+                            array.getObject(i).ChangeSizeIfPossible(e.X - initial_x);
+                        }
+                        this.pictureBox2.Invalidate();
+                        array.setStatusOfDrawing(false);
+                    }
+                }
                 initial_x = e.X;
-
-                this.pictureBox2.Invalidate();
-                group.setStatusOfDrawingForGroup(false);
+                array.setStatusOfDrawing(false);
             }
         }
 
@@ -171,11 +163,12 @@ namespace lab_7
                 changeSize = false;
             }
         }
+
     }
     public class CFigure
     {
         protected int x, y;
-        protected bool selected = false;
+        protected bool selected = true;
 
 
         protected Pen pen1 = new Pen(Color.Red, 10);
@@ -186,9 +179,9 @@ namespace lab_7
             return false;
         }
 
-        public void SetStatusClicking(bool vr)
+        public virtual void SetStatusClicking(bool vr)
         {
-            selected = vr;
+            return;
         }
         public bool GetStatusClicking()
         {
@@ -229,6 +222,10 @@ namespace lab_7
         {
             return;
         }
+        public virtual void ungroup(_Array arr, int pozition)
+        {
+            return;
+        }
     }
 
     public class CCircle : CFigure
@@ -243,6 +240,11 @@ namespace lab_7
 
         public CCircle()
         {
+        }
+
+        public override void SetStatusClicking(bool vr)
+        {
+            selected = vr;
         }
 
         public override bool CheckInsideOrNot(int x_1, int y_1)
@@ -337,6 +339,10 @@ namespace lab_7
         {
         }
 
+        public override void SetStatusClicking(bool vr)
+        {
+            selected = vr;
+        }
         private void setVertices()
         {
             points[0].X = x - a; points[0].Y = y + b;
@@ -450,6 +456,10 @@ namespace lab_7
             this.y = y;
         }
 
+        public override void SetStatusClicking(bool vr)
+        {
+            selected = vr;
+        }
         public CRectangle()
         {
         }
@@ -464,7 +474,7 @@ namespace lab_7
         }
 
         public override bool CheckInsideOrNot(int x_1, int y_1)
-        {
+        { 
             if ((x_1 >= points[1].X) && (x_1 <= points[3].X) && (y_1 >= points[1].Y) && (y_1 <= points[3].Y))
             {
                 return true;
@@ -553,28 +563,35 @@ namespace lab_7
     public class CGroup : CFigure
     {
         private int count = 0;
-        private bool status_of_drawing;
         private CFigure[] figures;
 
         public CGroup()
         {
-            figures = new CFigure[0];
+            figures = new CFigure[count+1];
         }
 
+        public override void SetStatusClicking(bool vr)
+        {
+            selected = vr;
+            for (int i = 0; i < count; i++)
+            {
+                figures[i].SetStatusClicking(vr);
+            }
+        }
         public int size()
         {
             return count;
         }
 
-        public bool drawed ()
+        public override void ungroup (_Array arr, int pozition)
         {
-            return status_of_drawing;
+            arr.RemoveObj(pozition);
+            for (int i = 0; i < count; i++)
+            {
+                arr.AddObject(figures[i]);
+            }
+            
         }
-        public void setStatusOfDrawingForGroup(bool res)
-        {
-            status_of_drawing = res;
-        }
-
         public void addFigure(CFigure curr_fig)
         {
             count++;
@@ -582,7 +599,7 @@ namespace lab_7
             CFigure[] arr_copy = new CFigure[count];
             for (int i = 0; i < count - 1; i++)
             {
-                arr_copy[i] = figures[i];
+                arr_copy[i] = figures[i]; //проблема здесь
             }
             arr_copy[count - 1] = curr_fig;
 
@@ -607,7 +624,16 @@ namespace lab_7
         {
             for (int i = 0; i < count; i++)
             {
-                figures[i].draw(e, graph);
+                if (selected)
+                {
+                    figures[i].setPen(Color.DarkBlue);
+                    figures[i].draw(e, graph);
+                }
+                else
+                {
+                    figures[i].setPen(Color.Red);
+                    figures[i].draw(e, graph);
+                }
             }
         }
 
@@ -652,40 +678,48 @@ namespace lab_7
             return true;
         }
 
-        public void ungrouping(_Array tr)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                tr.AddObject(figures[i]);
-            }
-            figures = new CFigure[0];
-            count = 0;
-        }
-
-        public void delete()
-        {
-            figures = new CFigure[0];
-        }
-
-        public void setCount(int a)
-        {
-            count = a;
-        }
 
         public override void save(StreamWriter fstream)
         {
+            fstream.WriteLine("G");
+            fstream.WriteLine(count);
+
             for (int i = 0; i < count; i++)
             {
                 figures[i].save(fstream);
             }
         }
 
-        public void setPen(Color clr)
+        public override void load(StreamReader fstream)
         {
-            for (int i = 0; i < count; i++)
+            string cnt = fstream.ReadLine();
+            this.count = Convert.ToInt32(cnt);
+
+            figures = new CFigure[count];
+
+            CFigure sample = new CFigure();
+
+            for (int i = 0; i < this.count; i++)
             {
-                figures[i].setPen(clr);
+                string line = fstream.ReadLine();
+                switch (line)
+                {
+                    case "C":
+                        sample = new CCircle();
+                        break;
+                    case "T":
+                        sample = new CTriangle();
+                        break;
+                    case "R":
+                        sample = new CRectangle();
+                        break;
+                    default:
+                        break;
+                }
+                sample.load(fstream);
+                figures[i] = sample;
             }
+            
         }
     }
 
@@ -696,14 +730,19 @@ namespace lab_7
         private int _size;
         private bool abildraw = true;
 
-        public bool CheckClick(int x, int y)
+        public bool ClickOnScreen(int x, int y, bool CtrlPress)
         {
             bool summ = false;
             for (int i = 0; i < _size; i++)
             {
                 if ((array[i] != null) && (array[i].CheckInsideOrNot(x, y)))
                 {
+                    array[i].SetStatusClicking(true);
                     summ = true;
+                }
+                else if ((array[i] != null) && (!array[i].CheckInsideOrNot(x, y)) && (!CtrlPress))
+                {
+                    array[i].SetStatusClicking(false);
                 }
             }
             return summ;
@@ -719,31 +758,9 @@ namespace lab_7
             abildraw = result;
         }
 
-
-        public void setStatus(int x, int y, bool CtrlPress)
+        private void UnselectPrevious()
         {
-            for (int i = 0; i < _size; i++)
-            {
-                if (array[i] != null)
-                {
-                    if (array[i].CheckInsideOrNot(x, y))
-                    {
-                        array[i].SetStatusClicking(true);
-                    }
-                    else
-                    {
-                        if (!CtrlPress)
-                        {
-                            array[i].SetStatusClicking(false);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void clearAllClicked()
-        {
-            for (int i = 0; i < _size; i++)
+            for (int i = 0; i < _size - 1; i++)
             {
                 array[i].SetStatusClicking(false);
             }
@@ -763,25 +780,6 @@ namespace lab_7
         {
             return array[pozition];
         }
-        public int[] getIndexObjectFromXY (int x, int y)
-        {
-            int[] mass = new int[0];
-
-            int cnt = 0;
-            for (int i = 0; i < _size; i++)
-            {
-                if (array[i] != null)
-                {
-                    if (array[i].GetStatusClicking())
-                    {
-                        cnt++;
-                        mass = new int[cnt];
-                        mass[cnt - 1] = i;
-                    }
-                }
-            }
-            return mass;
-        }
 
         public void SetObject(int pozition, CFigure crc)
         {
@@ -793,13 +791,7 @@ namespace lab_7
             array[pozition] = null;
         }
 
-        public void RemoveAllObj()
-        {
-            for (int i = 0; i < _size; i++)
-            {
-                array[i] = null;
-            }
-        }
+
         public void AddObject(CFigure crc)
         {
             abildraw = false;
@@ -822,7 +814,7 @@ namespace lab_7
 
             array = arr_copy;
 
-            clearAllClicked();
+            UnselectPrevious();
             return;
         }
 
@@ -835,7 +827,7 @@ namespace lab_7
         {
             StreamReader fstream = new StreamReader(path);
             string line = fstream.ReadLine();
-            int count_load = Convert.ToInt32 (line);
+            int count_load = Convert.ToInt32(line);
 
             string code;
             CFigure fig;
@@ -855,7 +847,7 @@ namespace lab_7
             }
         }
     }
-
+    //разбить по файлам
     public class _Array_factory: _Array
     {
         public override CFigure createFigure(string code)
@@ -868,9 +860,11 @@ namespace lab_7
                     return new CTriangle();
                 case "R":
                     return new CRectangle();
+                case "G":
+                    return new CGroup();
                 default:
                     break;
-            }
+            } 
             return null;
         }
     }

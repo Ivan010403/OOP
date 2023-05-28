@@ -41,7 +41,6 @@ namespace lab_7
 
         public override void onSubjectChanged(CFigure who)
         {
-
             tree = new TreeNode();
 
             if (who is CGroup)
@@ -53,6 +52,15 @@ namespace lab_7
             {
                 tree.Nodes.Add(who.GetType().ToString());
             }
+        }
+    }
+
+    
+    public class CStickyObserver: CObserver
+    {
+        public override void onSubjectChanged(CFigure who)
+        {
+            who.SetStatusClicking(true);
         }
     }
 }

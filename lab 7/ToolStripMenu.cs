@@ -134,6 +134,10 @@ namespace lab_7
             
             array.loadFigures(filename, array);
 
+            array.notifyTree();
+            treeView1.Nodes.Clear();
+            uploadTree();
+
             array.setStatusOfDrawing(false);
             this.pictureBox2.Invalidate();
         }
@@ -162,6 +166,7 @@ namespace lab_7
             treeView1.Nodes.Clear();
             uploadTree();
 
+
             this.pictureBox2.Invalidate();
         }
 
@@ -178,6 +183,25 @@ namespace lab_7
                             array.getObject(i).ungroup(array, i);
                             return;
                         }
+                    }
+                }
+            }
+            array.notifyTree();
+            treeView1.Nodes.Clear();
+            uploadTree();
+
+            this.pictureBox2.Invalidate();
+        }
+
+        private void stickyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < array.size(); i++)
+            {
+                if (array.getObject(i)!=null)
+                {
+                    if (array.getObject(i).GetStatusClicking()==true)
+                    {
+                        array.getObject(i).sticky(true);
                     }
                 }
             }

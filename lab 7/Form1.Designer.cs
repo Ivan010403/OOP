@@ -51,6 +51,7 @@ namespace lab_7
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.stickyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
@@ -64,7 +65,8 @@ namespace lab_7
             this.saveToolStripMenuItem,
             this.loadToolStripMenuItem,
             this.groupingToolStripMenuItem,
-            this.ungroupingToolStripMenuItem});
+            this.ungroupingToolStripMenuItem,
+            this.stickyToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1078, 28);
@@ -203,12 +205,21 @@ namespace lab_7
             // 
             // treeView1
             // 
+            this.treeView1.CheckBoxes = true;
             this.treeView1.Location = new System.Drawing.Point(806, 31);
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(270, 417);
             this.treeView1.TabIndex = 2;
+            this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
             this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
             this.treeView1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyUp);
+            // 
+            // stickyToolStripMenuItem
+            // 
+            this.stickyToolStripMenuItem.Name = "stickyToolStripMenuItem";
+            this.stickyToolStripMenuItem.Size = new System.Drawing.Size(61, 24);
+            this.stickyToolStripMenuItem.Text = "Sticky";
+            this.stickyToolStripMenuItem.Click += new System.EventHandler(this.stickyToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -254,5 +265,6 @@ namespace lab_7
         private ToolStripMenuItem groupingToolStripMenuItem;
         private ToolStripMenuItem ungroupingToolStripMenuItem;
         private TreeView treeView1;
+        private ToolStripMenuItem stickyToolStripMenuItem;
     }
 }

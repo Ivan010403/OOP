@@ -95,10 +95,25 @@ namespace lab_7
                 uploadTree();
             }
 
+            setCheckedTreeView(); //проблема с неспаданием выделения
+
             array.setStatusOfDrawing(false);
             this.pictureBox2.Invalidate();
         }
 
+        private void setCheckedTreeView()
+        {
+            for (int i = 0; i < array.size(); i++)
+            {
+                if ((array.getObject(i)!=null)&&(array.getObject(i).GetStatusClicking()==true))
+                {
+                    if (i < treeView1.TopNode.Nodes.Count)
+                    {
+                        treeView1.TopNode.Nodes[i].Checked = true;
+                    }
+                }
+            }
+        }
         private void uploadTree()
         {
             this.treeView1.Nodes.Add("Storage");
@@ -110,22 +125,21 @@ namespace lab_7
                     if (array.getObject(i).getNode()!=null)
                     {
                         this.treeView1.Nodes[0].Nodes.Add(array.getObject(i).getNode());
-
                     }
                 }
             }
-
         }
 
-        //private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
-        //{
-        //    for (int i = 0; i < array.size(); i++)
-        //    {
-        //        if (treeView1.TopNode.LastNode.Index >= i) // Выбор объектов в меню Storage
-        //            array.getObject(i).SetStatusClicking(treeView1.TopNode.Nodes[i].Checked);
-        //    }
-        //    pictureBox2.Invalidate();
-        //}
+        private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            for (int i = 0; i < array.size(); i++)
+            {
+                if (treeView1.TopNode.LastNode.Index >= i) 
+                    array.getObject(i).SetStatusClicking(treeView1.TopNode.Nodes[i].Checked);
+            }
+            array.setStatusOfDrawing(false);
+            pictureBox2.Invalidate();
+        }
 
         private void pictureBox2_MouseMove(object sender, MouseEventArgs e)
         {
@@ -138,6 +152,7 @@ namespace lab_7
                         if (array.getObject(i).GetStatusClicking() == true)
                         {
                             array.getObject(i).changePositionIfPossible(e.X - initial_x, e.Y - initial_y);
+                            array.notifySec();
                         }
                         this.pictureBox2.Invalidate();
                         array.setStatusOfDrawing(false);

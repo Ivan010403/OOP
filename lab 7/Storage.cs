@@ -88,6 +88,7 @@ namespace lab_7
         public void AddObject(CFigure crc)
         {
             CObserver obs = new CObserver_curr();
+            CObserver sticky = new CStickyObserver();
 
             abildraw = false;
             for (int i = 0; i < _size; i++)
@@ -96,8 +97,8 @@ namespace lab_7
                 {
                     SetObject(i, crc);
 
-                    array[i].addObserver(obs);
-                    
+                    array[i].addObserver(obs, sticky);
+                    notifyTree();
 
                     return;
                 }
@@ -113,7 +114,7 @@ namespace lab_7
 
             array = arr_copy;
 
-            array[_size-1].addObserver(obs);
+            array[_size-1].addObserver(obs, sticky);
             
 
             UnselectPrevious();
@@ -128,8 +129,33 @@ namespace lab_7
             {
                 if (array[i]!=null)
                 {
-                    array[i].notify();
+                    array[i].notifyFirst();
                 }
+            }
+        }
+
+        public void notifySec()
+        {
+            int x = 0;
+            int y = 0;
+
+            for (int i = 0; i < _size; i++)
+            {
+                if (array[i].stick == true)
+                {
+                    x = array[i].getX();
+                    y = array[i].getY();
+                    break;
+                }
+            }
+
+            for (int i = 0; i < _size; i++)
+            {
+                if ((Math.Abs(array[i].getX() - x) < array[i].getSize()*2) && (Math.Abs(array[i].getY() - y) < array[i].getSize() * 2))
+                {
+                    array[i].notifySecond();
+                }
+
             }
         }
 

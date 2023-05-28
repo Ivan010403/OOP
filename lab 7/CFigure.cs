@@ -11,33 +11,58 @@ namespace lab_7
     {
         protected int x, y;
         protected bool selected = true;
+        public bool stick = false;
 
-        protected CObserver curr = new CObserver_curr();
+        protected List<CObserver> cobservers = new List<CObserver>();
         
         protected Pen pen1 = new Pen(Color.Red, 10);
         protected Pen pen2 = new Pen(Color.DarkBlue, 10);
 
 
-        public void addObserver (CObserver obs)
+        public void addObserver (CObserver obs, CObserver sticky)
         {
-            curr = obs;
+            cobservers.Add(obs);
+            cobservers.Add(sticky);
         }
 
-        public virtual void notify ()
+        public virtual void notifyFirst ()
+        {
+            return;
+        }
+
+        public virtual void notifySecond()
         {
             return;
         }
 
         public TreeNode getNode ()
         {
-            if (curr.tree.FirstNode!=null)
+            if (cobservers[0].tree.FirstNode!=null)
             {
-                return curr.tree.Nodes[0];
+                return cobservers[0].tree.Nodes[0];
 
             }
             return null;
         }
 
+        public void sticky(bool sm)
+        {
+            stick = sm;
+        }
+
+        public int getX()
+        {
+            return x;
+        }
+        public int getY()
+        {
+            return y;
+        }
+
+        public virtual int getSize()
+        {
+            return 0;
+        }
 
         public virtual bool CheckInsideOrNot(int x_1, int y_1)
         {
@@ -112,11 +137,20 @@ namespace lab_7
         {
         }
 
-        public override void notify()
+        public override int getSize()
         {
-            curr.onSubjectChanged(this);
+            return radius;
         }
 
+        public override void notifyFirst()
+        {
+            cobservers[0].onSubjectChanged(this);
+        }
+
+        public override void notifySecond()
+        {
+            cobservers[1].onSubjectChanged(this);
+        }
         public override void SetStatusClicking(bool vr)
         {
             selected = vr;
@@ -214,9 +248,18 @@ namespace lab_7
         {
         }
 
-        public override void notify()
+        public override int getSize()
         {
-            curr.onSubjectChanged(this);
+            return a;
+        }
+
+        public override void notifyFirst()
+        {
+            cobservers[0].onSubjectChanged(this);
+        }
+        public override void notifySecond()
+        {
+            cobservers[1].onSubjectChanged(this);
         }
 
         public override void SetStatusClicking(bool vr)
@@ -336,6 +379,11 @@ namespace lab_7
             this.y = y;
         }
 
+        public override int getSize()
+        {
+            return a;
+        }
+
         public override void SetStatusClicking(bool vr)
         {
             selected = vr;
@@ -344,10 +392,16 @@ namespace lab_7
         {
         }
 
-        public override void notify()
+        public override void notifyFirst()
         {
-            curr.onSubjectChanged(this);
+            cobservers[0].onSubjectChanged(this);
         }
+
+        public override void notifySecond()
+        {
+            cobservers[1].onSubjectChanged(this);
+        }
+
         private void setVertices()
         {
             points[0].X = x - a; points[0].Y = y + a;
@@ -453,12 +507,26 @@ namespace lab_7
             figures = new CFigure[count + 1];
         }
 
-        public override void notify()
+        public override int getSize()
         {
-            curr.onSubjectChanged(this);
+            return 25;
+        }
+        
+        public override void notifyFirst()
+        {
+            cobservers[0].onSubjectChanged(this);
             for (int i = 0; i < count; i++)
             {
-                figures[i].notify();
+                figures[i].notifyFirst();
+            }
+        }
+
+        public override void notifySecond()
+        {
+            cobservers[1].onSubjectChanged(this);
+            for (int i = 0; i < count; i++)
+            {
+                figures[i].notifySecond();
             }
         }
 
@@ -503,6 +571,10 @@ namespace lab_7
             figures = arr_copy;
 
             figures[count - 1].SetStatusClicking(true);
+
+            x = figures[0].getX();
+            y = figures[0].getY();
+
         }
 
         public override bool CheckInsideOrNot(int x_1, int y_1)
@@ -604,6 +676,8 @@ namespace lab_7
 
                 sample.load(fstream, factory);
                 figures[i] = sample;
+
+                figures[i].addObserver(new CObserver_curr(), new CObserver_curr());
             }
 
         }
